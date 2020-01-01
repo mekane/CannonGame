@@ -53,10 +53,20 @@
 
         function initialize() {
             const canvas = document.querySelector("canvas");
+
+            canvas.addEventListener('click', canvasClicked);
+
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
             game.init(canvas);
             game.redraw();
+
+            function canvasClicked(e) {
+                const x = e.pageX - canvas.offsetLeft;
+                const y = e.pageY - canvas.offsetTop;
+
+                game.click(x, y);
+            }
         }
 
         initialize()

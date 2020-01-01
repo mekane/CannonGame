@@ -11,6 +11,13 @@ let g; //graphics context
 let screenWidth = 300;
 let screenHeight = 150;
 
+function click(screenX, screenY) {
+    const x = screenX;
+    const y = screenHeight - screenY;
+
+    console.log(`click ${x}, ${y}`);
+}
+
 function drawBackground() {
     g.save();
 
@@ -50,7 +57,6 @@ function init(canvasObj) {
     screenWidth = canvasObj.width;
     screenHeight = canvasObj.height;
 
-    console.log('init', canvasObj);
     console.log('context', g);
     console.log(`dimensions ${screenWidth} x ${screenHeight}`);
 
@@ -83,6 +89,7 @@ function toggleGrid() {
 }
 
 export default {
+    click,
     init,
     toggleGrid,
     redraw,
