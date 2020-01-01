@@ -57,7 +57,7 @@ function init(canvasObj) {
     screenWidth = canvasObj.width;
     screenHeight = canvasObj.height;
 
-    console.log('context', g);
+    //console.log('context', g);
     console.log(`dimensions ${screenWidth} x ${screenHeight}`);
 
     reset();

@@ -31,45 +31,45 @@
     </style>
 </head>
 <body>
-    <canvas id="main"></canvas>
-    <div class="controls">
-        <button class="controls__button-grid">Toggle Grid</button>
-        <button class="controls__button-reset">Reset</button>
-        <button class="controls__button-step">Step</button>
-    </div>
+<canvas id="main"></canvas>
+<div class="controls">
+    <button class="controls__button-grid">Toggle Grid</button>
+    <button class="controls__button-reset">Reset</button>
+    <button class="controls__button-step">Step</button>
+</div>
 
-    <script type="module">
-        import game from "./index.js";
+<script type="module">
+    import game from "./index.js";
 
-        const resetButton = document.querySelector(".controls__button-reset");
-        const toggleGridButton = document.querySelector(".controls__button-grid");
-        const stepButton = document.querySelector(".controls__button-step");
+    const resetButton = document.querySelector(".controls__button-reset");
+    const toggleGridButton = document.querySelector(".controls__button-grid");
+    const stepButton = document.querySelector(".controls__button-step");
 
-        resetButton.addEventListener('click', game.reset);
-        stepButton.addEventListener('click', game.step);
-        toggleGridButton.addEventListener('click', game.toggleGrid);
+    resetButton.addEventListener('click', game.reset);
+    stepButton.addEventListener('click', game.step);
+    toggleGridButton.addEventListener('click', game.toggleGrid);
 
-        window.addEventListener('resize', initialize)
+    window.addEventListener('resize', initialize)
 
-        function initialize() {
-            const canvas = document.querySelector("canvas");
+    function initialize() {
+        const canvas = document.querySelector("canvas");
 
-            canvas.addEventListener('click', canvasClicked);
+        canvas.addEventListener('click', canvasClicked);
 
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            game.init(canvas);
-            game.redraw();
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        game.init(canvas);
+        game.redraw();
 
-            function canvasClicked(e) {
-                const x = e.pageX - canvas.offsetLeft;
-                const y = e.pageY - canvas.offsetTop;
+        function canvasClicked(e) {
+            const x = e.pageX - canvas.offsetLeft;
+            const y = e.pageY - canvas.offsetTop;
 
-                game.click(x, y);
-            }
+            game.click(x, y);
         }
+    }
 
-        initialize()
-    </script>
+    initialize()
+</script>
 </body>
 </html>
