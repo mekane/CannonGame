@@ -4,12 +4,17 @@
     <meta charset="utf-8">
     <title>Cannon Game</title>
     <style>
-        #main {
+        body {
+            margin: 0;
+        }
 
+        #main {
+            height: 90vh;
+            width: 100vw;
         }
 
         .controls {
-
+            min-height: 30px;
         }
 
         .controls > button {
@@ -43,6 +48,18 @@
         resetButton.addEventListener('click', game.reset);
         stepButton.addEventListener('click', game.step);
         toggleGridButton.addEventListener('click', game.toggleGrid);
+
+        window.addEventListener('resize', initialize)
+
+        function initialize() {
+            const canvas = document.querySelector("canvas");
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            game.init(canvas);
+            game.redraw();
+        }
+
+        initialize()
     </script>
 </body>
 </html>
