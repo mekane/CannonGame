@@ -18,7 +18,7 @@ function addBall(x, y) {
     const ball = {
         xPosition: x,
         yPosition: y,
-        verticalAcceleration: 1,
+        verticalAcceleration: 0,
         horizontalAcceleration: 0
     };
 
@@ -40,9 +40,7 @@ function click(screenX, screenY) {
 }
 
 function drawBalls() {
-    if (balls.length) {
-        balls.forEach(drawBall);
-    }
+    balls.forEach(drawBall);
 }
 
 function drawBall(ball) {
@@ -58,6 +56,9 @@ function drawBall(ball) {
     g.save();
 
     g.fillStyle = 'black';
+
+    if (ball.crashed)
+        g.fillStyle = 'red';
 
     g.beginPath();
     g.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
@@ -145,6 +146,28 @@ function reset() {
 
 function step() {
     console.log('step');
+
+    //do physics loop
+    balls.forEach((ball) => {
+        ball.verticalAcceleration -= 1; //gravity!
+
+        ball.xPosition += ball.horizontalAcceleration;
+        ball.yPosition += ball.verticalAcceleration;
+
+        if (ball.verticalAcceleration < -3) //terminal velocity
+            ball.verticalAcceleration = -3;
+
+        if (ball.yPosition <= 0) {
+            ball.verticalAcceleration = 0;
+            ball.horizontalAcceleration -= 3;
+
+            if (ball.horizontalAcceleration < 0)
+                ball.horizontalAcceleration = 0;
+
+            ball.yPosition = 0;
+            ball.crashed = true;
+        }
+    });
 
     redraw();
 }
