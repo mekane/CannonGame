@@ -1,10 +1,8 @@
 // Game Constants
 const gridSize = 50;
 const gridThickness = 2;
-const gridColor = 'rgb(30, 30, 30)';
 
 // UI State
-let showGrid = true;
 
 // Game Elements
 let balls = [];
@@ -43,15 +41,6 @@ function click(screenX, screenY) {
     redraw();
 }
 
-function drawBackground() {
-    g.save();
-
-    g.fillStyle = '#eee';
-    g.fillRect(0, 0, screenWidth, screenHeight);
-
-    g.restore();
-}
-
 function drawBalls() {
     console.log('draw', balls);
     if (balls.length) {
@@ -84,32 +73,6 @@ function drawBall(ball) {
     g.restore();
 }
 
-function drawGrid() {
-    if (!showGrid)
-        return;
-
-    g.save();
-
-    g.strokeStyle = gridColor;
-    g.lineWidth = gridThickness;
-
-    for (let x = 1; x < screenWidth; x += gridSize) {
-        g.beginPath();
-        g.moveTo(x, 0);
-        g.lineTo(x, screenHeight);
-        g.stroke();
-    }
-
-    for (let y = 1; y < screenHeight; y += gridSize) {
-        g.beginPath();
-        g.moveTo(0, screenHeight - y);
-        g.lineTo(screenWidth, screenHeight - y);
-        g.stroke();
-    }
-
-    g.restore();
-}
-
 function hover(screenX, screenY) {
     const x = screenX;
     const y = screenHeight - screenY;
@@ -126,14 +89,42 @@ function hover(screenX, screenY) {
     //g.fillRect(rectX, rectY - gridSize, gridSize, gridSize)
 }
 
-function init(canvasObj) {
-    g = canvasObj.getContext('2d');
+function initGrid(canvasObject) {
+    const gc = canvasObject.getContext('2d');
 
+    const w = canvasObject.width;
+    const h = canvasObject.height;
+
+    console.log(`Initialize Grid Canvas: dimensions ${w} x ${h}`);
+
+    gc.fillStyle = '#ddd';
+    gc.fillRect(0, 0, w, h);
+
+    gc.strokeStyle = 'rgb(30, 30, 30)';
+    gc.lineWidth = gridThickness;
+
+    for (let x = 1; x < w; x += gridSize) {
+        gc.beginPath();
+        gc.moveTo(x, 0);
+        gc.lineTo(x, h);
+        gc.stroke();
+    }
+
+    for (let y = 1; y < h; y += gridSize) {
+        gc.beginPath();
+        gc.moveTo(0, h - y);
+        gc.lineTo(w, h - y);
+        gc.stroke();
+    }
+
+}
+
+function initMain(canvasObj) {
+    g = canvasObj.getContext('2d');
     screenWidth = canvasObj.width;
     screenHeight = canvasObj.height;
 
-    //console.log('context', g);
-    console.log(`dimensions ${screenWidth} x ${screenHeight}`);
+    console.log(`Initialize Main Canvas: dimensions ${screenWidth} x ${screenHeight}`);
 
     reset();
 }
@@ -145,8 +136,8 @@ function redraw() {
     }
     console.log('redraw');
 
-    drawBackground();
-    drawGrid();
+    g.clearRect(0, 0, screenWidth, screenHeight)
+
     drawBalls();
 }
 
@@ -164,17 +155,11 @@ function step() {
     redraw();
 }
 
-function toggleGrid() {
-    showGrid = !showGrid;
-    console.log(`grid ${showGrid ? 'on' : 'off'}`);
-    redraw();
-}
-
 export default {
     click,
     hover,
-    init,
-    toggleGrid,
+    initGrid,
+    initMain,
     redraw,
     reset,
     step

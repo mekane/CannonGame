@@ -8,13 +8,27 @@
             margin: 0;
         }
 
-        #main {
-            height: 90vh;
+        canvas {
+            height: 95vh;
+            left: 0;
+            position: absolute;
+            top: 0;
             width: 100vw;
         }
 
+        #grid {
+            z-index: 1;
+        }
+
+        #main {
+            z-index: 2;
+        }
+
         .controls {
-            min-height: 30px;
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            height: 5vh;
         }
 
         .controls > button {
@@ -31,6 +45,7 @@
     </style>
 </head>
 <body>
+<canvas id="grid"></canvas>
 <canvas id="main"></canvas>
 <div class="controls">
     <button class="controls__button-grid">Toggle Grid</button>
@@ -52,26 +67,31 @@
     window.addEventListener('resize', initialize)
 
     function initialize() {
-        const canvas = document.querySelector("canvas");
+        const grid = document.getElementById('grid');
+        grid.width = grid.clientWidth;
+        grid.height = grid.clientHeight;
+        game.initGrid(grid);
 
-        canvas.addEventListener('click', canvasClicked);
-        canvas.addEventListener('mousemove', canvasHover);
+        const main = document.getElementById('main');
+        main.width = main.clientWidth;
+        main.height = main.clientHeight;
+        game.initMain(main);
 
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-        game.init(canvas);
+        main.addEventListener('click', canvasClicked);
+        main.addEventListener('mousemove', canvasHover);
+
         game.redraw();
 
         function canvasClicked(e) {
-            const x = e.pageX - canvas.offsetLeft;
-            const y = e.pageY - canvas.offsetTop;
+            const x = e.pageX - main.offsetLeft;
+            const y = e.pageY - main.offsetTop;
 
             game.click(x, y);
         }
 
         function canvasHover(e) {
-            const x = e.pageX - canvas.offsetLeft;
-            const y = e.pageY - canvas.offsetTop;
+            const x = e.pageX - main.offsetLeft;
+            const y = e.pageY - main.offsetTop;
 
             //game.hover(x, y);
             //game.click(x, y);
