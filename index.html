@@ -5,6 +5,7 @@
     <title>Cannon Game</title>
     <style>
         body {
+            background: #ddd;
             margin: 0;
         }
 
@@ -25,14 +26,16 @@
         }
 
         .controls {
+            background: #ececec;
             bottom: 0;
             left: 0;
             position: absolute;
             height: 5vh;
+            width: 100%;
         }
 
         .controls > button {
-
+            margin-top: 8px;
         }
 
         .controls__button-grid {
@@ -41,11 +44,20 @@
 
         .controls__button-grid {
 
+        }
+
+        .show {
+            opacity: 1;
+        }
+
+        .hide {
+            opacity: 0;
+            transition: opacity 250ms;
         }
     </style>
 </head>
 <body>
-<canvas id="grid"></canvas>
+<canvas id="grid" class="show"></canvas>
 <canvas id="main"></canvas>
 <div class="controls">
     <button class="controls__button-grid">Toggle Grid</button>
@@ -62,7 +74,7 @@
 
     resetButton.addEventListener('click', game.reset);
     stepButton.addEventListener('click', game.step);
-    toggleGridButton.addEventListener('click', game.toggleGrid);
+    toggleGridButton.addEventListener('click', toggleGrid);
 
     window.addEventListener('resize', initialize)
 
@@ -79,26 +91,36 @@
 
         main.addEventListener('click', canvasClicked);
         main.addEventListener('mousemove', canvasHover);
+        main.addEventListener('mouseout', () => game.hover(-1, -1));
 
         game.redraw();
 
         function canvasClicked(e) {
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
-
             game.click(x, y);
         }
 
         function canvasHover(e) {
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
-
-            //game.hover(x, y);
-            //game.click(x, y);
+            game.hover(x, y);
         }
     }
 
-    initialize()
+    initialize();
+
+    function toggleGrid() {
+        const el = document.getElementById('grid');
+
+        if (el.matches('.show')) {
+            el.classList.add('hide');
+            el.classList.remove('show');
+        } else {
+            el.classList.remove('hide');
+            el.classList.add('show');
+        }
+    }
 </script>
 </body>
 </html>

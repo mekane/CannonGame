@@ -3,6 +3,8 @@ const gridSize = 50;
 const gridThickness = 2;
 
 // UI State
+let highlightedSquareX = -1;
+let highlightedSquareY = -1;
 
 // Game Elements
 let balls = [];
@@ -25,16 +27,12 @@ function addBall(x, y) {
 }
 
 function click(screenX, screenY) {
-    const x = screenX;
     const y = screenHeight - screenY;
 
-    const squareX = Math.floor((x) / gridSize);
+    const squareX = Math.floor((screenX) / gridSize);
     const squareY = Math.floor((y) / gridSize);
 
-    console.log(`click ${x}, ${y} -> square [${squareX}, ${squareY}]`);
-
-    const rectX = 1 + squareX * (gridSize);
-    const rectY = screenHeight - (1 + squareY * (gridSize));
+    //console.log(`click ${x}, ${y} -> square [${squareX}, ${squareY}]`);
 
     addBall(squareX, squareY);
 
@@ -42,7 +40,6 @@ function click(screenX, screenY) {
 }
 
 function drawBalls() {
-    console.log('draw', balls);
     if (balls.length) {
         balls.forEach(drawBall);
     }
@@ -52,7 +49,7 @@ function drawBall(ball) {
     const rectX = 1 + ball.xPosition * (gridSize);
     const rectY = screenHeight - (1 + ball.yPosition * (gridSize));
 
-    console.log(`Draw ball (${ball.xPosition}, ${ball.yPosition}) at ${rectX}, ${rectY}`);
+    //console.log(`Draw ball (${ball.xPosition}, ${ball.yPosition}) at ${rectX}, ${rectY}`);
 
     const centerX = rectX + (gridSize / 2);
     const centerY = rectY - (gridSize / 2);
@@ -74,19 +71,14 @@ function drawBall(ball) {
 }
 
 function hover(screenX, screenY) {
-    const x = screenX;
     const y = screenHeight - screenY;
 
-    const squareX = Math.floor((x) / gridSize);
-    const squareY = Math.floor((y) / gridSize);
+    highlightedSquareX = Math.floor((screenX) / gridSize);
+    highlightedSquareY = Math.floor((y) / gridSize);
 
-    const rectX = 1 + squareX * (gridSize);
-    const rectY = screenHeight - (1 + squareY * (gridSize));
+    //console.log(`mouse ${x}, ${y} -> square [${squareX}, ${squareY}]`);
 
-    // console.log(`mouse ${x}, ${y} -> square [${squareX}, ${squareY}]`);
-
-    //g.fillStyle = '#dfd';
-    //g.fillRect(rectX, rectY - gridSize, gridSize, gridSize)
+    redraw();
 }
 
 function initGrid(canvasObject) {
@@ -96,9 +88,6 @@ function initGrid(canvasObject) {
     const h = canvasObject.height;
 
     console.log(`Initialize Grid Canvas: dimensions ${w} x ${h}`);
-
-    gc.fillStyle = '#ddd';
-    gc.fillRect(0, 0, w, h);
 
     gc.strokeStyle = 'rgb(30, 30, 30)';
     gc.lineWidth = gridThickness;
@@ -134,15 +123,20 @@ function redraw() {
         console.error("Canvas not initialized");
         return;
     }
-    console.log('redraw');
 
     g.clearRect(0, 0, screenWidth, screenHeight)
+
+    //Highlight square
+    g.fillStyle = '#d0d0d0';
+    const rectX = 2 + highlightedSquareX * (gridSize);
+    const rectY = screenHeight - (highlightedSquareY * (gridSize));
+    g.fillRect(rectX, rectY - gridSize, gridSize - 2, gridSize - 2);
 
     drawBalls();
 }
 
 function reset() {
-    console.log('reset')
+    console.log('reset');
 
     balls = [];
 
@@ -150,7 +144,7 @@ function reset() {
 }
 
 function step() {
-    console.log('step')
+    console.log('step');
 
     redraw();
 }
