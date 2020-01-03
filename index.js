@@ -22,8 +22,8 @@ function addBall(x, y) {
         horizontalAcceleration: 0
     };
 
-    //balls.push(ball);
-    balls[0] = ball;
+    balls.push(ball);
+    //balls[0] = ball;
 }
 
 function click(screenX, screenY) {
