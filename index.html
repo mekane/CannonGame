@@ -55,6 +55,7 @@
         const canvas = document.querySelector("canvas");
 
         canvas.addEventListener('click', canvasClicked);
+        canvas.addEventListener('mousemove', canvasHover);
 
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
@@ -66,6 +67,14 @@
             const y = e.pageY - canvas.offsetTop;
 
             game.click(x, y);
+        }
+
+        function canvasHover(e) {
+            const x = e.pageX - canvas.offsetLeft;
+            const y = e.pageY - canvas.offsetTop;
+
+            //game.hover(x, y);
+            //game.click(x, y);
         }
     }
 
