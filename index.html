@@ -76,9 +76,12 @@
     stepButton.addEventListener('click', game.step);
     toggleGridButton.addEventListener('click', toggleGrid);
 
-    window.addEventListener('resize', initialize)
+    window.addEventListener('resize', initialize);
 
     function initialize() {
+        const body = document.querySelector('body');
+        body.addEventListener('keyup', keyPressed);
+
         const grid = document.getElementById('grid');
         grid.width = grid.clientWidth;
         grid.height = grid.clientHeight;
@@ -109,6 +112,15 @@
     }
 
     initialize();
+
+    function keyPressed(e) {
+        console.log(`key ${e.key}`);
+
+        if (e.key === '-')
+            game.sendEvent('zoomOut');
+        else if (e.key === '=')
+            game.sendEvent('zoomIn');
+    }
 
     function toggleGrid() {
         const el = document.getElementById('grid');

@@ -1,5 +1,5 @@
 // Game Constants
-const gridSize = 50;
+let gridSize = 30;
 const gridThickness = 2;
 
 // UI State
@@ -11,6 +11,7 @@ let balls = [];
 
 // Graphics Context from view
 let g; //graphics context
+let gc; //grid context
 let screenWidth = 300;
 let screenHeight = 150;
 
@@ -83,30 +84,13 @@ function hover(screenX, screenY) {
 }
 
 function initGrid(canvasObject) {
-    const gc = canvasObject.getContext('2d');
+    gc = canvasObject.getContext('2d');
+    screenWidth = canvasObject.width;
+    screenHeight = canvasObject.height;
 
-    const w = canvasObject.width;
-    const h = canvasObject.height;
+    console.log(`Initialize Grid Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
 
-    console.log(`Initialize Grid Canvas: dimensions ${w} x ${h}`);
-
-    gc.strokeStyle = 'rgb(30, 30, 30)';
-    gc.lineWidth = gridThickness;
-
-    for (let x = 1; x < w; x += gridSize) {
-        gc.beginPath();
-        gc.moveTo(x, 0);
-        gc.lineTo(x, h);
-        gc.stroke();
-    }
-
-    for (let y = 1; y < h; y += gridSize) {
-        gc.beginPath();
-        gc.moveTo(0, h - y);
-        gc.lineTo(w, h - y);
-        gc.stroke();
-    }
-
+    redrawGrid();
 }
 
 function initMain(canvasObj) {
@@ -136,10 +120,45 @@ function redraw() {
     drawBalls();
 }
 
+function redrawGrid() {
+    gc.clearRect(0, 0, screenWidth, screenHeight);
+    gc.strokeStyle = 'rgb(30, 30, 30)';
+    gc.lineWidth = gridThickness;
+
+    for (let x = 1; x < screenWidth; x += gridSize) {
+        gc.beginPath();
+        gc.moveTo(x, 0);
+        gc.lineTo(x, screenHeight);
+        gc.stroke();
+    }
+
+    for (let y = 1; y < screenHeight; y += gridSize) {
+        gc.beginPath();
+        gc.moveTo(0, screenHeight - y);
+        gc.lineTo(screenWidth, screenHeight - y);
+        gc.stroke();
+    }
+}
+
 function reset() {
     console.log('reset');
 
     balls = [];
+
+    redraw();
+}
+
+function sendEvent(eventType, eventProperties) {
+    if (eventType === "zoomIn") {
+        gridSize = Math.min(60, gridSize + 2);
+        redrawGrid();
+    } else if (eventType === "zoomOut") {
+        gridSize = Math.max(10, gridSize - 2);
+        redrawGrid();
+    } else
+        return;
+
+    console.log(`event: ${eventType} `, gridSize);
 
     redraw();
 }
@@ -179,5 +198,6 @@ export default {
     initMain,
     redraw,
     reset,
+    sendEvent,
     step
 };
