@@ -41,33 +41,59 @@ function drawBall(ball) {
     const centerY = rectY - (gridSize / 2);
     const radius = (gridSize / 2) - 5;
 
-    g.save();
-
     g.fillStyle = 'black';
 
-    if (ball.crashed)
+    if (ball.hit) {
+        g.fillStyle = '#11ff11';
+    }
+    else if (ball.crashed) {
         g.fillStyle = 'red';
+    }
 
     g.beginPath();
     g.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    g.strokeStyle = '#990000';
+    g.stroke();
     g.fill();
-
-    //context.lineWidth = 5;
-    //context.strokeStyle = '#003300';
-    //context.stroke();
-
-    g.restore();
+    g.stroke();
 }
 
-function hover(screenX, screenY) {
-    const y = screenHeight - screenY;
+function drawCastle() {
+    g.save();
 
-    highlightedSquareX = Math.floor((screenX) / gridSize);
-    highlightedSquareY = Math.floor((y) / gridSize);
+    g.strokeStyle = 'rgb(30, 30, 30)';
+    g.lineWidth = 3;
 
-    //console.log(`mouse ${x}, ${y} -> square [${squareX}, ${squareY}]`);
+    g.translate(screenWidth - 30, screenHeight);
+    g.rotate(Math.PI);
 
-    redraw();
+    g.beginPath();
+    g.moveTo(20, 0);
+    g.lineTo(20, 65);
+    g.lineTo(0, 80);
+    g.lineTo(0, 100);
+    g.lineTo(15, 100);
+    g.lineTo(15, 80);
+    g.lineTo(29, 80);
+    g.lineTo(29, 100);
+    g.lineTo(43, 100);
+    g.lineTo(43, 80);
+    g.lineTo(57, 80);
+    g.lineTo(57, 100);
+    g.lineTo(71, 100);
+    g.lineTo(71, 80);
+    g.lineTo(85, 80);
+    g.lineTo(85, 100);
+    g.lineTo(100, 100);
+    g.lineTo(100, 80);
+    g.lineTo(80, 65);
+    g.lineTo(80, 0);
+    g.stroke();
+
+    g.fillStyle = '#d0d0d0';
+    g.fill();
+
+    g.restore();
 }
 
 function initGrid(canvasObject) {
@@ -96,7 +122,9 @@ function redraw() {
         return;
     }
 
-    g.clearRect(0, 0, screenWidth, screenHeight)
+    g.clearRect(0, 0, screenWidth, screenHeight);
+
+    drawCastle();
 
     //Highlight square
     g.fillStyle = '#d0d0d0';
@@ -172,18 +200,28 @@ function step() {
     console.log('step');
 
     //do physics loop
-    balls.forEach((ball) => {
+    balls.forEach(ball => {
+        console.log(`ball (${ball.xPosition}, ${ball.yPosition})`);
+
         ball.verticalAcceleration -= 1; //gravity!
 
         ball.xPosition += ball.horizontalAcceleration;
         ball.yPosition += ball.verticalAcceleration;
 
+        //check for collisions
+        //TODO: put this in a general-purpose object list with an encapsulated hit() method
+        if (ball.xPosition >= 47 && ball.xPosition <= 50 && ball.yPosition <= 3) {
+            ball.hit = true;
+            ball.horizontalAcceleration = 0;
+            ball.verticalAcceleration = 0;
+        }
+
         if (ball.verticalAcceleration < -3) //terminal velocity
             ball.verticalAcceleration = -3;
 
-        if (ball.yPosition <= 0) {
+        if (ball.yPosition <= 0) { //hit ground
             ball.verticalAcceleration = 0;
-            ball.horizontalAcceleration -= 3;
+            ball.horizontalAcceleration -= 3; //slow down but can still roll
 
             if (ball.horizontalAcceleration < 0)
                 ball.horizontalAcceleration = 0;
