@@ -124,13 +124,13 @@ function redraw() {
 
     g.clearRect(0, 0, screenWidth, screenHeight);
 
-    drawCastle();
-
     //Highlight square
     g.fillStyle = '#d0d0d0';
     const rectX = 2 + highlightedSquareX * (gridSize);
     const rectY = screenHeight - (highlightedSquareY * (gridSize));
     g.fillRect(rectX, rectY - gridSize, gridSize - 2, gridSize - 2);
+
+    drawCastle();
 
     drawBalls();
 }
@@ -210,7 +210,7 @@ function step() {
 
         //check for collisions
         //TODO: put this in a general-purpose object list with an encapsulated hit() method
-        if (ball.xPosition >= 47 && ball.xPosition <= 50 && ball.yPosition <= 3) {
+        if (ball.xPosition >= 59 && ball.xPosition <= 62 && ball.yPosition <= 3) {
             ball.hit = true;
             ball.horizontalAcceleration = 0;
             ball.verticalAcceleration = 0;

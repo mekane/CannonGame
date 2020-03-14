@@ -25,6 +25,20 @@
             z-index: 2;
         }
 
+        .help {
+            background: #efefef;
+            border: 4px solid #333;
+            height: 50vh;
+            left: 25vw;
+            min-height: 300px;
+            min-width: 300px;
+            padding: 8px;
+            position: absolute;
+            top: 25vh;
+            width: 50vw;
+            z-index: 2;
+        }
+
         .controls {
             background: #ececec;
             bottom: 0;
@@ -53,12 +67,27 @@
         .hide {
             opacity: 0;
             transition: opacity 250ms;
+            z-index: 0;
         }
     </style>
 </head>
 <body>
-<canvas id="grid" class="show"></canvas>
+<canvas id="grid" class="hide"></canvas>
 <canvas id="main"></canvas>
+<div class="help hide">
+    <header>Help</header>
+    <p>Keys:</p>
+    <dl>
+        <dt>h</dt>
+        <dd>toggle help</dd>
+
+        <dt>g</dt>
+        <dd>toggle grid</dd>
+
+        <dt>s</dt>
+        <dd>step once</dd>
+    </dl>
+</div>
 <div class="controls">
     <button class="controls__button-grid">Toggle Grid</button>
     <button class="controls__button-reset">Reset</button>
@@ -68,10 +97,12 @@
 <script type="module">
     import game from "./index.js";
 
+    const help = document.querySelector('.help');
     const resetButton = document.querySelector(".controls__button-reset");
     const toggleGridButton = document.querySelector(".controls__button-grid");
     const stepButton = document.querySelector(".controls__button-step");
 
+    help.addEventListener('click', hideHelp);
     resetButton.addEventListener('click', game.reset);
     stepButton.addEventListener('click', game.step);
     toggleGridButton.addEventListener('click', toggleGrid);
@@ -101,6 +132,7 @@
         game.redraw();
 
         function canvasClicked(e) {
+            hideHelp();
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
             game.sendEvent('click', { x, y });
@@ -116,6 +148,15 @@
     initialize();
 
     function keyPressed(e) {
+        if (e.key === 'h' || e.key === '?') {
+            if (helpIsShowing())
+                hideHelp();
+            else
+                showHelp();
+        }
+        else
+            hideHelp();
+
         if (e.key === '-')
             game.sendEvent('zoomOut');
         else if (e.key === '=')
@@ -149,6 +190,20 @@
             el.classList.remove('hide');
             el.classList.add('show');
         }
+    }
+
+    function helpIsShowing() {
+        return help.matches('.show');
+    }
+
+    function showHelp() {
+        help.classList.remove('hide');
+        help.classList.add('show');
+    }
+
+    function hideHelp() {
+        help.classList.add('hide');
+        help.classList.remove('show');
     }
 </script>
 </body>
