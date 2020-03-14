@@ -15,29 +15,16 @@ let gc; //grid context
 let screenWidth = 300;
 let screenHeight = 150;
 
-function addBall(x, y) {
+function addBall(x, y, verticalAcceleration = 0, horizontalAcceleration = 0) {
     const ball = {
         xPosition: x,
         yPosition: y,
-        verticalAcceleration: 0,
-        horizontalAcceleration: 0
+        verticalAcceleration,
+        horizontalAcceleration
     };
 
     balls.push(ball);
     //balls[0] = ball;
-}
-
-function click(screenX, screenY) {
-    const y = screenHeight - screenY;
-
-    const squareX = Math.floor((screenX) / gridSize);
-    const squareY = Math.floor((y) / gridSize);
-
-    //console.log(`click ${x}, ${y} -> square [${squareX}, ${squareY}]`);
-
-    addBall(squareX, squareY);
-
-    redraw();
 }
 
 function drawBalls() {
@@ -152,13 +139,31 @@ function sendEvent(eventType, eventProperties) {
     if (eventType === "zoomIn") {
         gridSize = Math.min(60, gridSize + 2);
         redrawGrid();
-    } else if (eventType === "zoomOut") {
-        gridSize = Math.max(10, gridSize - 2);
+    }
+    else if (eventType === "zoomOut") {
+        gridSize = Math.max(16, gridSize - 2);
         redrawGrid();
-    } else
-        return;
+    }
+    else if (eventType === 'click') {
+        const y = screenHeight - eventProperties.y;
 
-    console.log(`event: ${eventType} `, gridSize);
+        const squareX = Math.floor((eventProperties.x) / gridSize);
+        const squareY = Math.floor((y) / gridSize);
+
+        console.log(`click ${squareX}. ${squareY}`);
+
+        addBall(squareX, squareY);
+    }
+    else if (eventType === 'hover') {
+        const y = screenHeight - eventProperties.y;
+
+        highlightedSquareX = Math.floor((eventProperties.x) / gridSize);
+        highlightedSquareY = Math.floor((y) / gridSize);
+    }
+    else {
+        console.log(`event: ${eventType} `, gridSize);
+        return;
+    }
 
     redraw();
 }
@@ -192,8 +197,7 @@ function step() {
 }
 
 export default {
-    click,
-    hover,
+    addBall,
     initGrid,
     initMain,
     redraw,

@@ -78,6 +78,8 @@
 
     window.addEventListener('resize', initialize);
 
+    window.addBall = game.addBall;
+
     function initialize() {
         const body = document.querySelector('body');
         body.addEventListener('keyup', keyPressed);
@@ -94,32 +96,46 @@
 
         main.addEventListener('click', canvasClicked);
         main.addEventListener('mousemove', canvasHover);
-        main.addEventListener('mouseout', () => game.hover(-1, -1));
+        main.addEventListener('mouseout', () => game.sendEvent('hover', { x: -1, y: -1 }));
 
         game.redraw();
 
         function canvasClicked(e) {
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
-            game.click(x, y);
+            game.sendEvent('click', { x, y });
         }
 
         function canvasHover(e) {
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
-            game.hover(x, y);
+            game.sendEvent('hover', { x, y });
         }
     }
 
     initialize();
 
     function keyPressed(e) {
-        console.log(`key ${e.key}`);
-
         if (e.key === '-')
             game.sendEvent('zoomOut');
         else if (e.key === '=')
             game.sendEvent('zoomIn');
+        else if (e.key === 'g')
+            toggleGrid();
+        else if (e.key === ' ') {
+            window.setTimeout(game.step, 0);
+            window.setTimeout(game.step, 300);
+            window.setTimeout(game.step, 600);
+            window.setTimeout(game.step, 900);
+            window.setTimeout(game.step, 1200);
+            window.setTimeout(game.step, 1500);
+            window.setTimeout(game.step, 1800);
+            window.setTimeout(game.step, 2100);
+        }
+        else if (e.key === 's')
+            game.step();
+        else
+            console.log(`key ${e.key}`);
     }
 
     function toggleGrid() {
@@ -128,7 +144,8 @@
         if (el.matches('.show')) {
             el.classList.add('hide');
             el.classList.remove('show');
-        } else {
+        }
+        else {
             el.classList.remove('hide');
             el.classList.add('show');
         }
