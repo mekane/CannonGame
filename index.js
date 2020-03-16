@@ -4,8 +4,8 @@
 let balls = [];
 
 // Graphics Context from view
-let g; //graphics context
-let bc; //background context
+let g; //main graphics context
+let backgroundGraphicsContext;
 let screenWidth = 300;
 let screenHeight = 150;
 
@@ -48,51 +48,51 @@ function drawBall(ball) {
 }
 
 function drawCastle() {
-    g.save();
+    backgroundGraphicsContext.save();
 
-    g.strokeStyle = 'rgb(30, 30, 30)';
-    g.lineWidth = 3;
+    backgroundGraphicsContext.strokeStyle = 'rgb(30, 30, 30)';
+    backgroundGraphicsContext.lineWidth = 3;
 
-    g.translate(screenWidth - 30, screenHeight);
-    g.rotate(Math.PI);
+    backgroundGraphicsContext.translate(screenWidth - 30, screenHeight);
+    backgroundGraphicsContext.rotate(Math.PI);
 
-    g.beginPath();
-    g.moveTo(20, 0);
-    g.lineTo(20, 65);
-    g.lineTo(0, 80);
-    g.lineTo(0, 100);
-    g.lineTo(15, 100);
-    g.lineTo(15, 80);
-    g.lineTo(29, 80);
-    g.lineTo(29, 100);
-    g.lineTo(43, 100);
-    g.lineTo(43, 80);
-    g.lineTo(57, 80);
-    g.lineTo(57, 100);
-    g.lineTo(71, 100);
-    g.lineTo(71, 80);
-    g.lineTo(85, 80);
-    g.lineTo(85, 100);
-    g.lineTo(100, 100);
-    g.lineTo(100, 80);
-    g.lineTo(80, 65);
-    g.lineTo(80, 0);
-    g.stroke();
+    backgroundGraphicsContext.beginPath();
+    backgroundGraphicsContext.moveTo(20, 0);
+    backgroundGraphicsContext.lineTo(20, 65);
+    backgroundGraphicsContext.lineTo(0, 80);
+    backgroundGraphicsContext.lineTo(0, 100);
+    backgroundGraphicsContext.lineTo(15, 100);
+    backgroundGraphicsContext.lineTo(15, 80);
+    backgroundGraphicsContext.lineTo(29, 80);
+    backgroundGraphicsContext.lineTo(29, 100);
+    backgroundGraphicsContext.lineTo(43, 100);
+    backgroundGraphicsContext.lineTo(43, 80);
+    backgroundGraphicsContext.lineTo(57, 80);
+    backgroundGraphicsContext.lineTo(57, 100);
+    backgroundGraphicsContext.lineTo(71, 100);
+    backgroundGraphicsContext.lineTo(71, 80);
+    backgroundGraphicsContext.lineTo(85, 80);
+    backgroundGraphicsContext.lineTo(85, 100);
+    backgroundGraphicsContext.lineTo(100, 100);
+    backgroundGraphicsContext.lineTo(100, 80);
+    backgroundGraphicsContext.lineTo(80, 65);
+    backgroundGraphicsContext.lineTo(80, 0);
+    backgroundGraphicsContext.stroke();
 
-    g.fillStyle = '#d0d0d0';
-    g.fill();
+    backgroundGraphicsContext.fillStyle = '#d0d0d0';
+    backgroundGraphicsContext.fill();
 
-    g.restore();
+    backgroundGraphicsContext.restore();
 }
 
-function initGrid(canvasObject) {
-    bc = canvasObject.getContext('2d');
+function initBackground(canvasObject) {
+    backgroundGraphicsContext = canvasObject.getContext('2d');
     screenWidth = canvasObject.width;
     screenHeight = canvasObject.height;
 
-    console.log(`Initialize Grid Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
+    console.log(`Initialize Background Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
 
-    redrawGrid();
+    drawCastle();
 }
 
 function initMain(canvasObj) {
@@ -181,7 +181,7 @@ function step() {
 
 export default {
     addBall,
-    initGrid,
+    initBackground,
     initMain,
     redraw,
     reset,

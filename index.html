@@ -19,6 +19,7 @@
 
         #background {
             z-index: 1;
+            background: #adf;
         }
 
         #main {
@@ -40,7 +41,7 @@
         }
 
         .controls {
-            background: #ececec;
+            background: #073;
             bottom: 0;
             left: 0;
             position: absolute;
@@ -64,7 +65,7 @@
     </style>
 </head>
 <body>
-<canvas id="background" class="hide"></canvas>
+<canvas id="background"></canvas>
 <canvas id="main"></canvas>
 <div class="help hide">
     <header>Help</header>
@@ -102,7 +103,7 @@
         body.addEventListener('keyup', keyPressed);
 
         const background = document.getElementById('background');
-        grid.width = background.clientWidth;
+        background.width = background.clientWidth;
         background.height = background.clientHeight;
         game.initBackground(background);
 
@@ -145,10 +146,25 @@
             window.setTimeout(game.step, 1800);
             window.setTimeout(game.step, 2100);
         }
+        else if (e.key === 'b')
+            toggleBackground();
         else if (e.key === 's')
             game.step();
         else
             console.log(`key ${e.key}`);
+    }
+
+    function toggleBackground() {
+        const el = document.getElementById('background');
+
+        if (el.matches('.show')) {
+            el.classList.add('hide');
+            el.classList.remove('show');
+        }
+        else {
+            el.classList.remove('hide');
+            el.classList.add('show');
+        }
     }
 
     function helpIsShowing() {
