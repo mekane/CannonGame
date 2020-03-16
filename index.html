@@ -17,8 +17,9 @@
             width: 100vw;
         }
 
-        #grid {
+        #background {
             z-index: 1;
+            background: #adf;
         }
 
         #main {
@@ -40,7 +41,7 @@
         }
 
         .controls {
-            background: #ececec;
+            background: #073;
             bottom: 0;
             left: 0;
             position: absolute;
@@ -50,14 +51,6 @@
 
         .controls > button {
             margin-top: 8px;
-        }
-
-        .controls__button-grid {
-
-        }
-
-        .controls__button-grid {
-
         }
 
         .show {
@@ -72,7 +65,7 @@
     </style>
 </head>
 <body>
-<canvas id="grid" class="hide"></canvas>
+<canvas id="background"></canvas>
 <canvas id="main"></canvas>
 <div class="help hide">
     <header>Help</header>
@@ -81,15 +74,11 @@
         <dt>h</dt>
         <dd>toggle help</dd>
 
-        <dt>g</dt>
-        <dd>toggle grid</dd>
-
         <dt>s</dt>
         <dd>step once</dd>
     </dl>
 </div>
 <div class="controls">
-    <button class="controls__button-grid">Toggle Grid</button>
     <button class="controls__button-reset">Reset</button>
     <button class="controls__button-step">Step</button>
 </div>
@@ -99,13 +88,11 @@
 
     const help = document.querySelector('.help');
     const resetButton = document.querySelector(".controls__button-reset");
-    const toggleGridButton = document.querySelector(".controls__button-grid");
     const stepButton = document.querySelector(".controls__button-step");
 
     help.addEventListener('click', hideHelp);
     resetButton.addEventListener('click', game.reset);
     stepButton.addEventListener('click', game.step);
-    toggleGridButton.addEventListener('click', toggleGrid);
 
     window.addEventListener('resize', initialize);
 
@@ -115,10 +102,10 @@
         const body = document.querySelector('body');
         body.addEventListener('keyup', keyPressed);
 
-        const grid = document.getElementById('grid');
-        grid.width = grid.clientWidth;
-        grid.height = grid.clientHeight;
-        game.initGrid(grid);
+        const background = document.getElementById('background');
+        background.width = background.clientWidth;
+        background.height = background.clientHeight;
+        game.initBackground(background);
 
         const main = document.getElementById('main');
         main.width = main.clientWidth;
@@ -126,8 +113,6 @@
         game.initMain(main);
 
         main.addEventListener('click', canvasClicked);
-        main.addEventListener('mousemove', canvasHover);
-        main.addEventListener('mouseout', () => game.sendEvent('hover', { x: -1, y: -1 }));
 
         game.redraw();
 
@@ -136,12 +121,6 @@
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
             game.sendEvent('click', { x, y });
-        }
-
-        function canvasHover(e) {
-            const x = e.pageX - main.offsetLeft;
-            const y = e.pageY - main.offsetTop;
-            game.sendEvent('hover', { x, y });
         }
     }
 
@@ -157,13 +136,7 @@
         else
             hideHelp();
 
-        if (e.key === '-')
-            game.sendEvent('zoomOut');
-        else if (e.key === '=')
-            game.sendEvent('zoomIn');
-        else if (e.key === 'g')
-            toggleGrid();
-        else if (e.key === ' ') {
+        if (e.key === ' ') {
             window.setTimeout(game.step, 0);
             window.setTimeout(game.step, 300);
             window.setTimeout(game.step, 600);
@@ -173,14 +146,22 @@
             window.setTimeout(game.step, 1800);
             window.setTimeout(game.step, 2100);
         }
+        else if (e.key === 'ArrowLeft') {
+            game.sendEvent('changeGunAngle', {direction: 'up'});
+        }
+        else if (e.key === 'ArrowRight') {
+            game.sendEvent('changeGunAngle', {direction: 'down'});
+        }
+        else if (e.key === 'b')
+            toggleBackground();
         else if (e.key === 's')
             game.step();
         else
             console.log(`key ${e.key}`);
     }
 
-    function toggleGrid() {
-        const el = document.getElementById('grid');
+    function toggleBackground() {
+        const el = document.getElementById('background');
 
         if (el.matches('.show')) {
             el.classList.add('hide');
