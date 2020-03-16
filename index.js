@@ -47,6 +47,17 @@ function drawBall(ball) {
     g.stroke();
 }
 
+function drawCannonBody() {
+    backgroundGraphicsContext.save();
+
+    backgroundGraphicsContext.beginPath();
+    backgroundGraphicsContext.arc(75, screenHeight, 50, Math.PI, 0, false);
+    backgroundGraphicsContext.fill();
+
+
+    backgroundGraphicsContext.restore();
+}
+
 function drawCastle() {
     backgroundGraphicsContext.save();
 
@@ -92,6 +103,7 @@ function initBackground(canvasObject) {
 
     console.log(`Initialize Background Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
 
+    drawCannonBody();
     drawCastle();
 }
 
