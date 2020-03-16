@@ -126,8 +126,6 @@
         game.initMain(main);
 
         main.addEventListener('click', canvasClicked);
-        main.addEventListener('mousemove', canvasHover);
-        main.addEventListener('mouseout', () => game.sendEvent('hover', { x: -1, y: -1 }));
 
         game.redraw();
 
@@ -136,12 +134,6 @@
             const x = e.pageX - main.offsetLeft;
             const y = e.pageY - main.offsetTop;
             game.sendEvent('click', { x, y });
-        }
-
-        function canvasHover(e) {
-            const x = e.pageX - main.offsetLeft;
-            const y = e.pageY - main.offsetTop;
-            game.sendEvent('hover', { x, y });
         }
     }
 

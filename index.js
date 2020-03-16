@@ -2,10 +2,6 @@
 let gridSize = 30;
 const gridThickness = 2;
 
-// UI State
-let highlightedSquareX = -1;
-let highlightedSquareY = -1;
-
 // Game Elements
 let balls = [];
 
@@ -124,12 +120,6 @@ function redraw() {
 
     g.clearRect(0, 0, screenWidth, screenHeight);
 
-    //Highlight square
-    g.fillStyle = '#d0d0d0';
-    const rectX = 2 + highlightedSquareX * (gridSize);
-    const rectY = screenHeight - (highlightedSquareY * (gridSize));
-    g.fillRect(rectX, rectY - gridSize, gridSize - 2, gridSize - 2);
-
     drawCastle();
 
     drawBalls();
@@ -181,12 +171,6 @@ function sendEvent(eventType, eventProperties) {
         console.log(`click ${squareX}. ${squareY}`);
 
         addBall(squareX, squareY);
-    }
-    else if (eventType === 'hover') {
-        const y = screenHeight - eventProperties.y;
-
-        highlightedSquareX = Math.floor((eventProperties.x) / gridSize);
-        highlightedSquareY = Math.floor((y) / gridSize);
     }
     else {
         console.log(`event: ${eventType} `, gridSize);
