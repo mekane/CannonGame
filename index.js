@@ -52,15 +52,20 @@ function drawBall(ball) {
 }
 
 function drawCannonBarrel(degrees) {
+    console.log('redraw barrel ' + degrees);
     const rads = degrees * twoPiOver180;
-    const barrelBaseX = Math.cos(rads) * 50;
-    const barrelBaseY = screenHeight - Math.sin(rads) * 50;
+    const xPart = Math.cos(rads);
+    const yPart = Math.sin(rads);
 
-    const barrelX = 250;
-    const barrelY = screenHeight - 150;
+    const barrelBaseX =  75 + xPart * 50;
+    const barrelBaseY = screenHeight - yPart * 50;
+
+    const barrelX = 75 + 125 * xPart;
+    const barrelY = screenHeight - yPart * 125;
 
     g.beginPath();
     g.strokeStyle = "black";
+    g.lineWidth = 8;
     g.moveTo(barrelBaseX, barrelBaseY);
     g.lineTo(barrelX, barrelY);
     g.stroke();
@@ -147,7 +152,7 @@ function redraw() {
 
     drawBalls();
 
-    drawCannonBarrel(45);
+    drawCannonBarrel(gunAngle);
 }
 
 function reset() {
@@ -164,6 +169,14 @@ function sendEvent(eventType, eventProperties) {
         const y = screenHeight - eventProperties.y;
 
         console.log(`click ${x}. ${y}`);
+    }
+    if (eventType === 'changeGunAngle') {
+        console.log('change angle', eventProperties);
+        const direction = eventProperties.direction;
+        if (direction === 'up')
+            gunAngle = Math.min(85, gunAngle + 1);
+        else if (direction === 'down')
+            gunAngle = Math.max(5, gunAngle - 1);
     }
     else {
         console.log(`event: ${eventType} `, eventProperties);

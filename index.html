@@ -146,6 +146,12 @@
             window.setTimeout(game.step, 1800);
             window.setTimeout(game.step, 2100);
         }
+        else if (e.key === 'ArrowLeft') {
+            game.sendEvent('changeGunAngle', {direction: 'up'});
+        }
+        else if (e.key === 'ArrowRight') {
+            game.sendEvent('changeGunAngle', {direction: 'down'});
+        }
         else if (e.key === 'b')
             toggleBackground();
         else if (e.key === 's')
