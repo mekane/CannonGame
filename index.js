@@ -1,13 +1,11 @@
 // Game Constants
-let gridSize = 30;
-const gridThickness = 2;
 
 // Game Elements
 let balls = [];
 
 // Graphics Context from view
 let g; //graphics context
-let gc; //grid context
+let bc; //background context
 let screenWidth = 300;
 let screenHeight = 150;
 
@@ -28,14 +26,9 @@ function drawBalls() {
 }
 
 function drawBall(ball) {
-    const rectX = 1 + ball.xPosition * (gridSize);
-    const rectY = screenHeight - (1 + ball.yPosition * (gridSize));
-
     //console.log(`Draw ball (${ball.xPosition}, ${ball.yPosition}) at ${rectX}, ${rectY}`);
 
-    const centerX = rectX + (gridSize / 2);
-    const centerY = rectY - (gridSize / 2);
-    const radius = (gridSize / 2) - 5;
+    const radius = 15;
 
     g.fillStyle = 'black';
 
@@ -47,7 +40,7 @@ function drawBall(ball) {
     }
 
     g.beginPath();
-    g.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    g.arc(ball.positionX, ball.positionY, radius, 0, 2 * Math.PI, false);
     g.strokeStyle = '#990000';
     g.stroke();
     g.fill();
@@ -93,7 +86,7 @@ function drawCastle() {
 }
 
 function initGrid(canvasObject) {
-    gc = canvasObject.getContext('2d');
+    bc = canvasObject.getContext('2d');
     screenWidth = canvasObject.width;
     screenHeight = canvasObject.height;
 
@@ -125,26 +118,6 @@ function redraw() {
     drawBalls();
 }
 
-function redrawGrid() {
-    gc.clearRect(0, 0, screenWidth, screenHeight);
-    gc.strokeStyle = 'rgb(30, 30, 30)';
-    gc.lineWidth = gridThickness;
-
-    for (let x = 1; x < screenWidth; x += gridSize) {
-        gc.beginPath();
-        gc.moveTo(x, 0);
-        gc.lineTo(x, screenHeight);
-        gc.stroke();
-    }
-
-    for (let y = 1; y < screenHeight; y += gridSize) {
-        gc.beginPath();
-        gc.moveTo(0, screenHeight - y);
-        gc.lineTo(screenWidth, screenHeight - y);
-        gc.stroke();
-    }
-}
-
 function reset() {
     console.log('reset');
 
@@ -154,26 +127,14 @@ function reset() {
 }
 
 function sendEvent(eventType, eventProperties) {
-    if (eventType === "zoomIn") {
-        gridSize = Math.min(60, gridSize + 2);
-        redrawGrid();
-    }
-    else if (eventType === "zoomOut") {
-        gridSize = Math.max(16, gridSize - 2);
-        redrawGrid();
-    }
-    else if (eventType === 'click') {
+    if (eventType === 'click') {
+        const x = eventProperties.x;
         const y = screenHeight - eventProperties.y;
 
-        const squareX = Math.floor((eventProperties.x) / gridSize);
-        const squareY = Math.floor((y) / gridSize);
-
-        console.log(`click ${squareX}. ${squareY}`);
-
-        addBall(squareX, squareY);
+        console.log(`click ${x}. ${y}`);
     }
     else {
-        console.log(`event: ${eventType} `, gridSize);
+        console.log(`event: ${eventType} `, eventProperties);
         return;
     }
 
