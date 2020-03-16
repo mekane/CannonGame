@@ -9,6 +9,10 @@ let backgroundGraphicsContext;
 let screenWidth = 300;
 let screenHeight = 150;
 
+let gunAngle = 45;
+
+const twoPiOver180 = Math.PI / 180;
+
 function addBall(x, y, verticalAcceleration = 0, horizontalAcceleration = 0) {
     const ball = {
         xPosition: x,
@@ -47,10 +51,26 @@ function drawBall(ball) {
     g.stroke();
 }
 
+function drawCannonBarrel(degrees) {
+    const rads = degrees * twoPiOver180;
+    const barrelBaseX = Math.cos(rads) * 50;
+    const barrelBaseY = screenHeight - Math.sin(rads) * 50;
+
+    const barrelX = 250;
+    const barrelY = screenHeight - 150;
+
+    g.beginPath();
+    g.strokeStyle = "black";
+    g.moveTo(barrelBaseX, barrelBaseY);
+    g.lineTo(barrelX, barrelY);
+    g.stroke();
+}
+
 function drawCannonBody() {
     backgroundGraphicsContext.save();
 
     backgroundGraphicsContext.beginPath();
+    backgroundGraphicsContext.fillStyle = '#333';
     backgroundGraphicsContext.arc(75, screenHeight, 50, Math.PI, 0, false);
     backgroundGraphicsContext.fill();
 
@@ -125,9 +145,9 @@ function redraw() {
 
     g.clearRect(0, 0, screenWidth, screenHeight);
 
-    drawCastle();
-
     drawBalls();
+
+    drawCannonBarrel(45);
 }
 
 function reset() {
