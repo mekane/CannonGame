@@ -6,9 +6,10 @@ const cannonOffsetX = 75;
 
 const towerWidth = 100;
 const towerHeight = 100;
+const towerDistanceFromFarEdge = 30;
 
-const minPower = 1;
-const maxPower = 20;
+const minPower = 12;
+const maxPower = 37;
 const minAngle = 5;
 const maxAngle = 85;
 
@@ -26,7 +27,7 @@ let towerX = screenWidth;
 let towerY = screenHeight;
 
 let gunAngle = 45;
-let gunPower = 30;
+let gunPower = minPower + (maxPower - minPower) / 2;
 
 let barrelEndX = 0;
 let barrelEndY = 0;
@@ -57,33 +58,13 @@ function drawBall(ball) {
     g.fillStyle = '#999';
 
     if (ball.hit) {
-        g.fillStyle = '#11ff11';
+        g.fillStyle = '#11aa11';
     }
     else if (ball.crashed) {
         g.fillStyle = '#997777';
     }
 
     g.fill();
-
-    /*
-    const radius = 80;
-
-    g.beginPath();
-
-    g.fillStyle = 'black';
-
-    if (ball.hit) {
-        g.fillStyle = '#11ff11';
-    }
-    else if (ball.crashed) {
-        g.fillStyle = 'red';
-    }
-
-    g.arc(ball.positionX, screenHeight - ball.positionY, radius, 0, 2 * Math.PI, false);
-    g.fill();
-    g.strokeStyle = '#990000';
-    g.stroke();
-    */
 }
 
 function drawCannonBarrel(degrees) {
@@ -122,9 +103,10 @@ function drawTower() {
     backgroundGraphicsContext.strokeStyle = 'rgb(30, 30, 30)';
     backgroundGraphicsContext.lineWidth = 3;
 
-    towerX = screenWidth - 30;
+    towerX = screenWidth - towerWidth - towerDistanceFromFarEdge + 20;
+    towerY = screenHeight - towerHeight + 40;
 
-    backgroundGraphicsContext.translate(towerX, screenHeight);
+    backgroundGraphicsContext.translate(screenWidth - towerDistanceFromFarEdge, screenHeight);
     backgroundGraphicsContext.rotate(Math.PI);
 
     const turretHeight = 35;
@@ -189,6 +171,14 @@ function redraw() {
     }
 
     g.clearRect(0, 0, screenWidth, screenHeight);
+
+    /*
+    if (showTarget) {
+      g.strokeStyle = 'red';
+      g.lineWidth = 3;
+      g.strokeRect(towerX, towerY, towerWidth - 40, towerHeight - 40);
+    }
+    */
 
     drawBalls();
 
@@ -261,7 +251,7 @@ function step() {
 
         //check for collisions
         //TODO: put this in a general-purpose object list with an encapsulated hit() method
-        if (ball.xPosition >= towerX && ball.xPosition <= (towerX + towerWidth) && ball.yPosition <= towerHeight) {
+        if (ball.xPosition >= towerX && ball.xPosition <= (towerX + towerWidth - 40) && ball.yPosition <= towerHeight - 40) {
             ball.hit = true;
             ball.horizontalAcceleration = 0;
             ball.verticalAcceleration = 0;
