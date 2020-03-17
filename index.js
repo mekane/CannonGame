@@ -7,12 +7,12 @@ const cannonOffsetX = 75;
 const towerWidth = 100;
 const towerHeight = 100;
 
-const minPower = 50;
-const maxPower = 100;
+const minPower = 1;
+const maxPower = 20;
 const minAngle = 5;
 const maxAngle = 85;
 
-const G = -4;
+const G = -.25;
 
 // Game Elements
 let balls = [];
@@ -222,9 +222,9 @@ function sendEvent(eventType, eventProperties) {
     else if (eventType === 'changeGunPower') {
         const direction = eventProperties.direction;
         if (direction === 'up')
-            gunPower = Math.min(maxPower, gunPower + 1);
+            gunPower = Math.min(maxPower, gunPower + .25);
         else if (direction === 'down')
-            gunPower = Math.max(minPower, gunPower - 1);
+            gunPower = Math.max(minPower, gunPower - .25);
 
         console.log(`power ${gunPower}`);
     }
@@ -249,6 +249,9 @@ function sendEvent(eventType, eventProperties) {
 function step() {
     //do physics loop
     balls.forEach(ball => {
+        if (ball.dead)
+            return;
+
         console.log(`ball (${ball.xPosition}, ${ball.yPosition}) => [${ball.horizontalAcceleration}, ${ball.verticalAcceleration}]`);
 
         ball.verticalAcceleration += G;
@@ -273,6 +276,10 @@ function step() {
 
             ball.yPosition = 0;
             ball.crashed = true;
+        }
+
+        if (ball.horizontalAcceleration === 0 && ball.verticalAcceleration === 0) {
+            ball.dead = true;
         }
     });
 
