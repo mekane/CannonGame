@@ -1,4 +1,15 @@
 // Game Constants
+const cannonBarrelLength = 125;
+const cannonBarrelWidth = 8;
+const cannonBodyRadius = 50;
+const cannonOffsetX = 75;
+
+const minPower = 50;
+const maxPower = 100;
+const minAngle = 5;
+const maxAngle = 85;
+
+const G = -3;
 
 // Game Elements
 let balls = [];
@@ -10,10 +21,11 @@ let screenWidth = 300;
 let screenHeight = 150;
 
 let gunAngle = 45;
+let gunPower = 30;
 
 const twoPiOver180 = Math.PI / 180;
 
-function addBall(x, y, verticalAcceleration = 0, horizontalAcceleration = 0) {
+function addBall(x, y, horizontalAcceleration = 0, verticalAcceleration = 0) {
     const ball = {
         xPosition: x,
         yPosition: y,
@@ -30,9 +42,17 @@ function drawBalls() {
 }
 
 function drawBall(ball) {
-    //console.log(`Draw ball (${ball.xPosition}, ${ball.yPosition}) at ${rectX}, ${rectY}`);
+    //console.log(`Draw ball (${ball.xPosition}, ${screenHeight - ball.yPosition})`);
 
-    const radius = 15;
+    g.beginPath();
+    g.arc(ball.xPosition, screenHeight - ball.yPosition, 5, 0, 2 * Math.PI);
+    g.fillStyle = '#999';
+    g.fill();
+
+    /*
+    const radius = 80;
+
+    g.beginPath();
 
     g.fillStyle = 'black';
 
@@ -43,29 +63,27 @@ function drawBall(ball) {
         g.fillStyle = 'red';
     }
 
-    g.beginPath();
-    g.arc(ball.positionX, ball.positionY, radius, 0, 2 * Math.PI, false);
+    g.arc(ball.positionX, screenHeight - ball.positionY, radius, 0, 2 * Math.PI, false);
+    g.fill();
     g.strokeStyle = '#990000';
     g.stroke();
-    g.fill();
-    g.stroke();
+    */
 }
 
 function drawCannonBarrel(degrees) {
-    console.log('redraw barrel ' + degrees);
     const rads = degrees * twoPiOver180;
     const xPart = Math.cos(rads);
     const yPart = Math.sin(rads);
 
-    const barrelBaseX =  75 + xPart * 50;
-    const barrelBaseY = screenHeight - yPart * 50;
+    const barrelBaseX = cannonOffsetX + xPart * cannonBodyRadius;
+    const barrelBaseY = screenHeight - yPart * cannonBodyRadius;
 
-    const barrelX = 75 + 125 * xPart;
-    const barrelY = screenHeight - yPart * 125;
+    const barrelX = cannonOffsetX + (cannonBarrelLength * xPart);
+    const barrelY = screenHeight - (cannonBarrelLength * yPart);
 
     g.beginPath();
     g.strokeStyle = "black";
-    g.lineWidth = 8;
+    g.lineWidth = cannonBarrelWidth;
     g.moveTo(barrelBaseX, barrelBaseY);
     g.lineTo(barrelX, barrelY);
     g.stroke();
@@ -76,9 +94,8 @@ function drawCannonBody() {
 
     backgroundGraphicsContext.beginPath();
     backgroundGraphicsContext.fillStyle = '#333';
-    backgroundGraphicsContext.arc(75, screenHeight, 50, Math.PI, 0, false);
+    backgroundGraphicsContext.arc(cannonOffsetX, screenHeight, cannonBodyRadius, Math.PI, 0, false);
     backgroundGraphicsContext.fill();
-
 
     backgroundGraphicsContext.restore();
 }
@@ -126,7 +143,7 @@ function initBackground(canvasObject) {
     screenWidth = canvasObject.width;
     screenHeight = canvasObject.height;
 
-    console.log(`Initialize Background Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
+    //console.log(`Initialize Background Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
 
     drawCannonBody();
     drawCastle();
@@ -137,7 +154,7 @@ function initMain(canvasObj) {
     screenWidth = canvasObj.width;
     screenHeight = canvasObj.height;
 
-    console.log(`Initialize Main Canvas: dimensions ${screenWidth} x ${screenHeight}`);
+    //console.log(`Initialize Main Canvas: dimensions ${screenWidth} x ${screenHeight}`);
 
     reset();
 }
@@ -170,13 +187,34 @@ function sendEvent(eventType, eventProperties) {
 
         console.log(`click ${x}. ${y}`);
     }
-    if (eventType === 'changeGunAngle') {
-        console.log('change angle', eventProperties);
+    else if (eventType === 'changeGunAngle') {
         const direction = eventProperties.direction;
         if (direction === 'up')
-            gunAngle = Math.min(85, gunAngle + 1);
+            gunAngle = Math.min(maxAngle, gunAngle + 1);
         else if (direction === 'down')
-            gunAngle = Math.max(5, gunAngle - 1);
+            gunAngle = Math.max(minAngle, gunAngle - 1);
+
+        console.log(`angle ${gunAngle}`);
+    }
+    else if (eventType === 'changeGunPower') {
+        const direction = eventProperties.direction;
+        if (direction === 'up')
+            gunPower = Math.min(maxPower, gunPower + 1);
+        else if (direction === 'down')
+            gunPower = Math.max(minPower, gunPower - 1);
+
+        console.log(`power ${gunPower}`);
+    }
+    else if (eventType === 'fire') {
+        const rads = gunAngle * twoPiOver180;
+        const xPart = Math.cos(rads);
+        const yPart = Math.sin(rads);
+
+        const xAccel = (xPart * gunPower);
+        const yAccel = (yPart * gunPower);
+
+        console.log(`fire (${50}, ${screenHeight}) ${xAccel}, ${yAccel}`);
+        addBall(50, 0, xAccel, yAccel);
     }
     else {
         console.log(`event: ${eventType} `, eventProperties);
@@ -187,13 +225,11 @@ function sendEvent(eventType, eventProperties) {
 }
 
 function step() {
-    console.log('step');
-
     //do physics loop
     balls.forEach(ball => {
-        console.log(`ball (${ball.xPosition}, ${ball.yPosition})`);
+        console.log(`ball (${ball.xPosition}, ${ball.yPosition}) => [${ball.horizontalAcceleration}, ${ball.verticalAcceleration}]`);
 
-        ball.verticalAcceleration -= 1; //gravity!
+        ball.verticalAcceleration += G;
 
         ball.xPosition += ball.horizontalAcceleration;
         ball.yPosition += ball.verticalAcceleration;
@@ -206,12 +242,12 @@ function step() {
             ball.verticalAcceleration = 0;
         }
 
-        if (ball.verticalAcceleration < -3) //terminal velocity
-            ball.verticalAcceleration = -3;
+        if (ball.verticalAcceleration < -24) //terminal velocity
+            ball.verticalAcceleration = -24;
 
         if (ball.yPosition <= 0) { //hit ground
             ball.verticalAcceleration = 0;
-            ball.horizontalAcceleration -= 3; //slow down but can still roll
+            ball.horizontalAcceleration -= (Math.ceil(ball.horizontalAcceleration / 3)); //slow down but can still roll
 
             if (ball.horizontalAcceleration < 0)
                 ball.horizontalAcceleration = 0;

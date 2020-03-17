@@ -100,7 +100,7 @@
 
     function initialize() {
         const body = document.querySelector('body');
-        body.addEventListener('keyup', keyPressed);
+        body.addEventListener('keydown', keyPressed);
 
         const background = document.getElementById('background');
         background.width = background.clientWidth;
@@ -137,20 +137,19 @@
             hideHelp();
 
         if (e.key === ' ') {
-            window.setTimeout(game.step, 0);
-            window.setTimeout(game.step, 300);
-            window.setTimeout(game.step, 600);
-            window.setTimeout(game.step, 900);
-            window.setTimeout(game.step, 1200);
-            window.setTimeout(game.step, 1500);
-            window.setTimeout(game.step, 1800);
-            window.setTimeout(game.step, 2100);
+            game.sendEvent('fire');
         }
         else if (e.key === 'ArrowLeft') {
-            game.sendEvent('changeGunAngle', {direction: 'up'});
+            game.sendEvent('changeGunAngle', { direction: 'up' });
         }
         else if (e.key === 'ArrowRight') {
-            game.sendEvent('changeGunAngle', {direction: 'down'});
+            game.sendEvent('changeGunAngle', { direction: 'down' });
+        }
+        else if (e.key === 'ArrowUp') {
+            game.sendEvent('changeGunPower', { direction: 'up' });
+        }
+        else if (e.key === 'ArrowDown') {
+            game.sendEvent('changeGunPower', { direction: 'down' });
         }
         else if (e.key === 'b')
             toggleBackground();
