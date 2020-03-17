@@ -4,12 +4,16 @@ const cannonBarrelWidth = 8;
 const cannonBodyRadius = 50;
 const cannonOffsetX = 75;
 
+const towerWidth = 100;
+const towerHeight = 100;
+
 const minPower = 50;
 const maxPower = 100;
 const minAngle = 5;
 const maxAngle = 85;
 
-const G = -3;
+const G = -4;
+const terminalVelocity = -24;
 
 // Game Elements
 let balls = [];
@@ -19,9 +23,14 @@ let g; //main graphics context
 let backgroundGraphicsContext;
 let screenWidth = 300;
 let screenHeight = 150;
+let towerX = screenWidth;
+let towerY = screenHeight;
 
 let gunAngle = 45;
 let gunPower = 30;
+
+let barrelEndX = 0;
+let barrelEndY = 0;
 
 const twoPiOver180 = Math.PI / 180;
 
@@ -47,6 +56,14 @@ function drawBall(ball) {
     g.beginPath();
     g.arc(ball.xPosition, screenHeight - ball.yPosition, 5, 0, 2 * Math.PI);
     g.fillStyle = '#999';
+
+    if (ball.hit) {
+        g.fillStyle = '#11ff11';
+    }
+    else if (ball.crashed) {
+        g.fillStyle = '#997777';
+    }
+
     g.fill();
 
     /*
@@ -76,16 +93,16 @@ function drawCannonBarrel(degrees) {
     const yPart = Math.sin(rads);
 
     const barrelBaseX = cannonOffsetX + xPart * cannonBodyRadius;
-    const barrelBaseY = screenHeight - yPart * cannonBodyRadius;
+    const barrelBaseY = yPart * cannonBodyRadius;
 
-    const barrelX = cannonOffsetX + (cannonBarrelLength * xPart);
-    const barrelY = screenHeight - (cannonBarrelLength * yPart);
+    barrelEndX = cannonOffsetX + (cannonBarrelLength * xPart);
+    barrelEndY = cannonBarrelLength * yPart;
 
     g.beginPath();
     g.strokeStyle = "black";
     g.lineWidth = cannonBarrelWidth;
-    g.moveTo(barrelBaseX, barrelBaseY);
-    g.lineTo(barrelX, barrelY);
+    g.moveTo(barrelBaseX, screenHeight - barrelBaseY);
+    g.lineTo(barrelEndX, screenHeight - barrelEndY);
     g.stroke();
 }
 
@@ -100,35 +117,42 @@ function drawCannonBody() {
     backgroundGraphicsContext.restore();
 }
 
-function drawCastle() {
+function drawTower() {
     backgroundGraphicsContext.save();
 
     backgroundGraphicsContext.strokeStyle = 'rgb(30, 30, 30)';
     backgroundGraphicsContext.lineWidth = 3;
 
-    backgroundGraphicsContext.translate(screenWidth - 30, screenHeight);
+    towerX = screenWidth - 30;
+
+    backgroundGraphicsContext.translate(towerX, screenHeight);
     backgroundGraphicsContext.rotate(Math.PI);
+
+    const turretHeight = 35;
+    const turretStart = towerHeight - turretHeight;
+    const battlementHeight = 20;
+    const battlementBottom = towerHeight - battlementHeight;
 
     backgroundGraphicsContext.beginPath();
     backgroundGraphicsContext.moveTo(20, 0);
-    backgroundGraphicsContext.lineTo(20, 65);
-    backgroundGraphicsContext.lineTo(0, 80);
-    backgroundGraphicsContext.lineTo(0, 100);
-    backgroundGraphicsContext.lineTo(15, 100);
-    backgroundGraphicsContext.lineTo(15, 80);
-    backgroundGraphicsContext.lineTo(29, 80);
-    backgroundGraphicsContext.lineTo(29, 100);
-    backgroundGraphicsContext.lineTo(43, 100);
-    backgroundGraphicsContext.lineTo(43, 80);
-    backgroundGraphicsContext.lineTo(57, 80);
-    backgroundGraphicsContext.lineTo(57, 100);
-    backgroundGraphicsContext.lineTo(71, 100);
-    backgroundGraphicsContext.lineTo(71, 80);
-    backgroundGraphicsContext.lineTo(85, 80);
-    backgroundGraphicsContext.lineTo(85, 100);
-    backgroundGraphicsContext.lineTo(100, 100);
-    backgroundGraphicsContext.lineTo(100, 80);
-    backgroundGraphicsContext.lineTo(80, 65);
+    backgroundGraphicsContext.lineTo(20, turretStart);
+    backgroundGraphicsContext.lineTo(0, battlementBottom);
+    backgroundGraphicsContext.lineTo(0, towerHeight);
+    backgroundGraphicsContext.lineTo(15, towerHeight);
+    backgroundGraphicsContext.lineTo(15, battlementBottom);
+    backgroundGraphicsContext.lineTo(29, battlementBottom);
+    backgroundGraphicsContext.lineTo(29, towerHeight);
+    backgroundGraphicsContext.lineTo(43, towerHeight);
+    backgroundGraphicsContext.lineTo(43, battlementBottom);
+    backgroundGraphicsContext.lineTo(57, battlementBottom);
+    backgroundGraphicsContext.lineTo(57, towerHeight);
+    backgroundGraphicsContext.lineTo(71, towerHeight);
+    backgroundGraphicsContext.lineTo(71, battlementBottom);
+    backgroundGraphicsContext.lineTo(85, battlementBottom);
+    backgroundGraphicsContext.lineTo(85, towerHeight);
+    backgroundGraphicsContext.lineTo(100, towerHeight);
+    backgroundGraphicsContext.lineTo(100, battlementBottom);
+    backgroundGraphicsContext.lineTo(80, turretStart);
     backgroundGraphicsContext.lineTo(80, 0);
     backgroundGraphicsContext.stroke();
 
@@ -146,7 +170,7 @@ function initBackground(canvasObject) {
     //console.log(`Initialize Background Canvas: dimensions ${canvasObject.width} x ${canvasObject.height}`);
 
     drawCannonBody();
-    drawCastle();
+    drawTower();
 }
 
 function initMain(canvasObj) {
@@ -213,8 +237,7 @@ function sendEvent(eventType, eventProperties) {
         const xAccel = (xPart * gunPower);
         const yAccel = (yPart * gunPower);
 
-        console.log(`fire (${50}, ${screenHeight}) ${xAccel}, ${yAccel}`);
-        addBall(50, 0, xAccel, yAccel);
+        addBall(barrelEndX, barrelEndY, xAccel, yAccel);
     }
     else {
         console.log(`event: ${eventType} `, eventProperties);
@@ -236,14 +259,14 @@ function step() {
 
         //check for collisions
         //TODO: put this in a general-purpose object list with an encapsulated hit() method
-        if (ball.xPosition >= 59 && ball.xPosition <= 62 && ball.yPosition <= 3) {
+        if (ball.xPosition >= towerX && ball.xPosition <= (towerX + towerWidth) && ball.yPosition <= towerHeight) {
             ball.hit = true;
             ball.horizontalAcceleration = 0;
             ball.verticalAcceleration = 0;
         }
 
-        if (ball.verticalAcceleration < -24) //terminal velocity
-            ball.verticalAcceleration = -24;
+        if (ball.verticalAcceleration < terminalVelocity)
+            ball.verticalAcceleration = terminalVelocity;
 
         if (ball.yPosition <= 0) { //hit ground
             ball.verticalAcceleration = 0;
