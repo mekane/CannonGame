@@ -13,7 +13,6 @@ const minAngle = 5;
 const maxAngle = 85;
 
 const G = -4;
-const terminalVelocity = -24;
 
 // Game Elements
 let balls = [];
@@ -264,9 +263,6 @@ function step() {
             ball.horizontalAcceleration = 0;
             ball.verticalAcceleration = 0;
         }
-
-        if (ball.verticalAcceleration < terminalVelocity)
-            ball.verticalAcceleration = terminalVelocity;
 
         if (ball.yPosition <= 0) { //hit ground
             ball.verticalAcceleration = 0;
