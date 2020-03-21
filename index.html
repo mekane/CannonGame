@@ -41,16 +41,32 @@
         }
 
         .status-bar {
+            align-items: center;
             background: #073;
             bottom: 0;
+            box-sizing: border-box;
+            color: white;
+            display: flex;
+            justify-content: space-between;
             left: 0;
+            padding: 2px 25px;
             position: absolute;
             height: 5vh;
             width: 100%;
         }
 
-        .status-bar > button {
-            margin-top: 8px;
+        .status-bar__power {
+            display: flex;
+        }
+
+        .status-bar__power-label {
+            margin-right: 6px;
+        }
+
+        .status-bar__power-value {
+            background: #666;
+            border: 2px solid #363;
+            width: 100px;
         }
 
         .show {
@@ -76,10 +92,21 @@
 
         <dt>s</dt>
         <dd>step once</dd>
+        <button class="status-bar__button-reset">Reset</button>
     </dl>
 </div>
 <div class="status-bar">
-    <button class="status-bar__button-reset">Reset</button>
+    <div class="status-bar__power">
+        <div class="status-bar__power-label">Power:</div>
+        <div class="status-bar__power-value">
+            <div class="status-bar__power-value-display">67</div>
+        </div>
+    </div>
+    <div class="status-bar__show-help-message">Press 'h' to show help</div>
+    <div class="status-bar__score">
+        <div class="status-bar__score-label">Score:</div>
+        <div class="status-bar__score-value"></div>
+    </div>
 </div>
 
 <script type="module">
