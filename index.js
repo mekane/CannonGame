@@ -8,12 +8,13 @@ const towerWidth = 100;
 const towerHeight = 100;
 const towerDistanceFromFarEdge = 30;
 
-const minPower = 12;
+const minPower = 7.5;
 const maxPower = 37;
 const minAngle = 5;
 const maxAngle = 85;
 
 const G = -.25;
+const twoPiOver180 = Math.PI / 180;
 
 // Game Elements
 let balls = [];
@@ -32,7 +33,7 @@ let gunPower = minPower + (maxPower - minPower) / 2;
 let barrelEndX = 0;
 let barrelEndY = 0;
 
-const twoPiOver180 = Math.PI / 180;
+let score = 0;
 
 function addBall(x, y, horizontalAcceleration = 0, verticalAcceleration = 0) {
     const ball = {
@@ -141,6 +142,17 @@ function drawTower() {
     backgroundGraphicsContext.fill();
 
     backgroundGraphicsContext.restore();
+}
+
+function getGameStatus() {
+    const gunPowerPercent = (gunPower / maxPower).toFixed(2);
+
+    return {
+        gunAngle,
+        gunPower,
+        gunPowerPercent,
+        score
+    }
 }
 
 function initBackground(canvasObject) {
@@ -278,6 +290,7 @@ function step() {
 
 export default {
     addBall,
+    getGameStatus,
     initBackground,
     initMain,
     redraw,

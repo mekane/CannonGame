@@ -6,6 +6,8 @@
     <style>
         body {
             background: #ddd;
+            font-family: arial, sans-serif;
+            font-size: 24px;
             margin: 0;
         }
 
@@ -57,6 +59,7 @@
 
         .status-bar__power {
             display: flex;
+            flex: 0 0 25%;
         }
 
         .status-bar__power-label {
@@ -66,7 +69,31 @@
         .status-bar__power-value {
             background: #666;
             border: 2px solid #363;
-            width: 100px;
+            position: relative;
+            width: 200px;
+        }
+
+        .status-bar__power-value-display {
+            background: transparent;
+            box-sizing: border-box;
+            font-size: 22px;
+            height: 100%;
+            line-height: 24px;
+            left: 0;
+            padding-left: 2px;
+            position: absolute;
+            top: 0;
+        }
+
+        .status-bar__show-help-message {
+            flex: 0 0 50%;
+            text-align: center;
+        }
+
+        .status-bar__score {
+            display: flex;
+            flex: 0 0 25%;
+            justify-content: flex-end;
         }
 
         .show {
@@ -92,20 +119,20 @@
 
         <dt>s</dt>
         <dd>step once</dd>
-        <button class="status-bar__button-reset">Reset</button>
+        <button id="reset">Reset</button>
     </dl>
 </div>
 <div class="status-bar">
     <div class="status-bar__power">
         <div class="status-bar__power-label">Power:</div>
         <div class="status-bar__power-value">
-            <div class="status-bar__power-value-display">67</div>
+            <div class="status-bar__power-value-display"></div>
         </div>
     </div>
     <div class="status-bar__show-help-message">Press 'h' to show help</div>
     <div class="status-bar__score">
         <div class="status-bar__score-label">Score:</div>
-        <div class="status-bar__score-value"></div>
+        <div class="status-bar__score-value">0</div>
     </div>
 </div>
 
@@ -113,7 +140,9 @@
     import game from "./index.js";
 
     const help = document.querySelector('.help');
-    const resetButton = document.querySelector(".status-bar__button-reset");
+    const resetButton = document.querySelector("#reset");
+    const powerDisplay = document.querySelector('.status-bar__power-value-display');
+    const scoreDisplay = document.querySelector('.status-bar__score-value');
 
     help.addEventListener('click', hideHelp);
     resetButton.addEventListener('click', game.reset);
@@ -149,6 +178,7 @@
     }
 
     initialize();
+    update();
 
     function keyPressed(e) {
         if (e.key === 'h' || e.key === '?') {
@@ -177,10 +207,13 @@
         }
         else if (e.key === 'b')
             toggleBackground();
-        else if (e.key === 's')
+        else if (e.key === 's') {
             game.step();
+        }
         else
             console.log(`key ${e.key}`);
+
+        update();
     }
 
     function toggleBackground() {
@@ -208,6 +241,20 @@
     function hideHelp() {
         help.classList.add('hide');
         help.classList.remove('show');
+    }
+
+    function update() {
+        const gameState = game.getGameStatus();
+
+        const red = 255 - (gameState.gunPowerPercent * 255);
+        const green = 100 + gameState.gunPowerPercent * 156;
+        const color = `rgb(${red}, ${green}, 0)`;
+
+        powerDisplay.style.backgroundColor = color;
+        powerDisplay.style.width = (gameState.gunPowerPercent * 200) + 'px';
+        powerDisplay.textContent = Math.floor(gameState.gunPowerPercent * 100) + '%';
+
+        scoreDisplay.textContent = gameState.score;
     }
 </script>
 </body>
