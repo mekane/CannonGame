@@ -96,6 +96,14 @@
             justify-content: flex-end;
         }
 
+        .pause-message {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            color: #33f;
+            z-index: 2;
+        }
+
         .show {
             opacity: 1;
         }
@@ -108,7 +116,7 @@
     </style>
 </head>
 <body>
-<canvas id="background"></canvas>
+<canvas id="background" class="show"></canvas>
 <canvas id="main"></canvas>
 <div class="help hide">
     <header>Help</header>
@@ -135,6 +143,7 @@
         <div class="status-bar__score-value">0</div>
     </div>
 </div>
+<div class="pause-message hide">Paused (press 'p' to unpause)</div>
 
 <script type="module">
     import game from "./index.js";
@@ -150,6 +159,8 @@
     window.addEventListener('resize', initialize);
 
     window.addBall = game.addBall;
+
+    let paused = false;
 
     function initialize() {
         const body = document.querySelector('body');
@@ -178,9 +189,12 @@
     }
 
     initialize();
-    update();
+    update(true);
+    animationLoop();
 
     function keyPressed(e) {
+        let updatePower = false;
+
         if (e.key === 'h' || e.key === '?') {
             if (helpIsShowing())
                 hideHelp();
@@ -200,11 +214,15 @@
             game.sendEvent('changeGunAngle', { direction: 'down' });
         }
         else if (e.key === 'ArrowUp') {
+            updatePower = true;
             game.sendEvent('changeGunPower', { direction: 'up' });
         }
         else if (e.key === 'ArrowDown') {
+            updatePower = true;
             game.sendEvent('changeGunPower', { direction: 'down' });
         }
+        else if (e.key === 'p')
+            togglePaused();
         else if (e.key === 'b')
             toggleBackground();
         else if (e.key === 's') {
@@ -213,7 +231,7 @@
         else
             console.log(`key ${e.key}`);
 
-        update();
+        update(updatePower);
     }
 
     function toggleBackground() {
@@ -227,6 +245,24 @@
             el.classList.remove('hide');
             el.classList.add('show');
         }
+    }
+
+    function togglePaused() {
+        paused = !paused;
+
+        const el = document.querySelector('.pause-message');
+
+        if (el.matches('.show')) {
+            el.classList.add('hide');
+            el.classList.remove('show');
+        }
+        else {
+            el.classList.remove('hide');
+            el.classList.add('show');
+        }
+
+        if (!paused)
+            animationLoop();
     }
 
     function helpIsShowing() {
@@ -243,18 +279,34 @@
         help.classList.remove('show');
     }
 
-    function update() {
+    var lastScore = 0;
+
+    function update(doUpdatePower) {
         const gameState = game.getGameStatus();
+        let updateScore = (lastScore !== gameState.score);
 
-        const red = 255 - (gameState.gunPowerPercent * 255);
-        const green = 100 + gameState.gunPowerPercent * 156;
-        const color = `rgb(${red}, ${green}, 0)`;
+        if (doUpdatePower) {
+            const red = 255 - (gameState.gunPowerPercent * 255);
+            const green = 100 + gameState.gunPowerPercent * 156;
+            const color = `rgb(${red}, ${green}, 0)`;
 
-        powerDisplay.style.backgroundColor = color;
-        powerDisplay.style.width = (gameState.gunPowerPercent * 200) + 'px';
-        powerDisplay.textContent = Math.floor(gameState.gunPowerPercent * 100) + '%';
+            powerDisplay.style.backgroundColor = color;
+            powerDisplay.style.width = (gameState.gunPowerPercent * 200) + 'px';
+            powerDisplay.textContent = Math.floor(gameState.gunPowerPercent * 100) + '%';
+        }
 
-        scoreDisplay.textContent = gameState.score;
+        if (updateScore) {
+            lastScore = gameState.score;
+            scoreDisplay.textContent = gameState.score;
+        }
+    }
+
+    function animationLoop() {
+        game.step();
+        update();
+
+        if (!paused)
+            requestAnimationFrame(animationLoop);
     }
 </script>
 </body>

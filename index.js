@@ -267,6 +267,7 @@ function step() {
             ball.hit = true;
             ball.horizontalAcceleration = 0;
             ball.verticalAcceleration = 0;
+            score += 100;
         }
 
         if (ball.yPosition <= 0) { //hit ground
